@@ -1,0 +1,235 @@
+#%RAML 1.0
+title: Users API
+version: 1.0.0
+baseUri: https://api.example.com/v1
+mediaType: application/json
+
+description: |
+  A sample API for user management.
+
+  This demonstrates RAML 1.0 specification rendering with Stoplight Elements.
+
+types:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: Unique identifier for the user
+      email:
+        type: string
+        description: User's email address
+        pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+      name:
+        type: string
+        description: User's full name
+        minLength: 1
+        maxLength: 100
+      role:
+        type: string
+        enum: [admin, user, guest]
+        description: User's role in the system
+      createdAt:
+        type: datetime
+        description: When the user was created
+    example:
+      id: 1
+      email: john@example.com
+      name: John Doe
+      role: user
+      createdAt: 2024-01-15T10:30:00Z
+
+  CreateUserRequest:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true
+      name:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+        minLength: 8
+      role:
+        type: string
+        enum: [admin, user, guest]
+        default: user
+    example:
+      email: jane@example.com
+      name: Jane Smith
+      password: securePassword123
+      role: user
+
+  UpdateUserRequest:
+    type: object
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+        enum: [admin, user, guest]
+    example:
+      name: Jane Doe
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: string
+        description: Error code
+      message:
+        type: string
+        description: Human-readable error message
+    example:
+      code: NOT_FOUND
+      message: User not found
+
+/users:
+  displayName: Users
+  description: User management endpoints
+
+  get:
+    displayName: List Users
+    description: Returns a paginated list of users
+    queryParameters:
+      page:
+        type: integer
+        description: Page number
+        default: 1
+        minimum: 1
+      limit:
+        type: integer
+        description: Items per page
+        default: 20
+        minimum: 1
+        maximum: 100
+      role:
+        type: string
+        enum: [admin, user, guest]
+        description: Filter by role
+        required: false
+    responses:
+      200:
+        description: List of users
+        body:
+          application/json:
+            type: User[]
+            example:
+              - id: 1
+                email: john@example.com
+                name: John Doe
+                role: admin
+                createdAt: 2024-01-15T10:30:00Z
+              - id: 2
+                email: jane@example.com
+                name: Jane Smith
+                role: user
+                createdAt: 2024-01-16T14:20:00Z
+      400:
+        description: Invalid request parameters
+        body:
+          application/json:
+            type: Error
+
+  post:
+    displayName: Create User
+    description: Create a new user account
+    body:
+      application/json:
+        type: CreateUserRequest
+    responses:
+      201:
+        description: User created successfully
+        body:
+          application/json:
+            type: User
+      400:
+        description: Invalid input
+        body:
+          application/json:
+            type: Error
+      409:
+        description: Email already exists
+        body:
+          application/json:
+            type: Error
+            example:
+              code: CONFLICT
+              message: A user with this email already exists
+
+  /{userId}:
+    uriParameters:
+      userId:
+        type: integer
+        description: The unique identifier of the user
+
+    get:
+      displayName: Get User
+      description: Get a user by ID
+      responses:
+        200:
+          description: User details
+          body:
+            application/json:
+              type: User
+        404:
+          description: User not found
+          body:
+            application/json:
+              type: Error
+
+    put:
+      displayName: Update User
+      description: Update user information
+      body:
+        application/json:
+          type: UpdateUserRequest
+      responses:
+        200:
+          description: User updated successfully
+          body:
+            application/json:
+              type: User
+        404:
+          description: User not found
+          body:
+            application/json:
+              type: Error
+
+    delete:
+      displayName: Delete User
+      description: Delete a user account
+      responses:
+        204:
+          description: User deleted successfully
+        404:
+          description: User not found
+          body:
+            application/json:
+              type: Error
+
+/users/me:
+  displayName: Current User
+  description: Operations for the currently authenticated user
+
+  get:
+    displayName: Get Current User
+    description: Get the currently authenticated user's profile
+    responses:
+      200:
+        description: Current user details
+        body:
+          application/json:
+            type: User
+      401:
+        description: Not authenticated
+        body:
+          application/json:
+            type: Error
+            example:
+              code: UNAUTHORIZED
+              message: Authentication required

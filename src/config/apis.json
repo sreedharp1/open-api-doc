@@ -1,0 +1,22 @@
+{
+  "apis": [
+    {
+      "id": "petstore-api",
+      "name": "Petstore API",
+      "version": "1.0.0",
+      "category": "Sample APIs",
+      "specPath": "/specs/petstore.yaml",
+      "type": "openapi",
+      "description": "Sample OpenAPI 3.0 specification for a pet store"
+    },
+    {
+      "id": "users-api",
+      "name": "Users API",
+      "version": "1.0.0",
+      "category": "Sample APIs",
+      "specPath": "/specs/users.raml",
+      "type": "raml",
+      "description": "Sample RAML 1.0 specification for user management"
+    }
+  ]
+}

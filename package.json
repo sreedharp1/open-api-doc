@@ -1,0 +1,34 @@
+{
+  "name": "apidoc",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Sreedhar Pamidiparthi",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "convert-raml": "node scripts/convert-raml.js",
+    "dev": "npm run convert-raml && vite",
+    "build": "npm run convert-raml && tsc -b && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && aws s3 sync dist/ s3://$S3_BUCKET --delete"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "redoc": "^2.1.5",
+    "mobx": "^6.13.5",
+    "styled-components": "^6.1.13"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "~5.6.3",
+    "vite": "^6.0.3",
+    "webapi-parser": "^0.5.0"
+  }
+}
